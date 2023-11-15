@@ -81,7 +81,7 @@ public class MainWindow extends Application {
 //				VBox dialogVbox = new VBox(20);
 //				dialogVbox.getChildren().add(new Text("Placeholder"));
 				Scene dialogScene = createdialogScene();
-				dialog.setScene(dialogScene);
+				dialog.setScene(new LoginCreateAccountPane(new AccountManager()));
 				dialog.show();
 			}
 		});

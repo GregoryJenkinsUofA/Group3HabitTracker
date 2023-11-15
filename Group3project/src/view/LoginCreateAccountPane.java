@@ -202,7 +202,7 @@ public class LoginCreateAccountPane extends GridPane {
 	}
 	
 	public void switchStage(Button currentButton) {
-        Scene settingsScene = new Scene(self);
+        Scene settingsScene = new Scene(this);
         Stage stage = (Stage) currentButton.getScene().getWindow();
         stage.setScene(settingsScene);
 	}

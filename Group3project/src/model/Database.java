@@ -40,17 +40,15 @@ public class Database {
 	}
 	
 	public void createTable() throws SQLException {
-		String createTablesql = "" +
-								"CREATE TABLE  " + tableName +
-								"( " +
+		String createTablesql = "CREATE TABLE  " + tableName +
+								" ( " +
 								"Activity TEXT, " +
 								"Day INT, " +
 								"Month INT, " +
 								"Year INT, " +
 								"DayInYear INT, " +
-								"Duration INT, " +
-								"); " +
-								"";
+								"Duration INT " +
+								");";
 		
 		Statement stmt = conn.createStatement();
 		stmt.execute(createTablesql);
