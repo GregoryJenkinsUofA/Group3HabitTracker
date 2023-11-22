@@ -1,9 +1,16 @@
 package view;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,18 +18,23 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Activity;
 
 public class AddingActivitiesView extends Stage {
 	String chosenActivity = "";
 	Text activityText = new Text("Select Activity:");
+	ListView<String> list = new ListView<String>();
+	ObservableList<String> items =FXCollections.observableArrayList (
+		    "Running", "Hiking", "Brushing Teeth", "Vaccuming", "Washing Dishes", "Gym");
 	Text selectedActivity = new Text();
 	GridPane grid = new GridPane();
 	VBox vbox = new VBox();
@@ -68,8 +80,27 @@ public class AddingActivitiesView extends Stage {
 			// When clicked creates new activity and inserts into database
 			@Override
 			public void handle(ActionEvent arg0) {
+				int time = (int) slider.getValue();
+				java.util.Date dt = new java.util.Date();
+				int day = dt.getDate();
+				int month = dt.getMonth();
+				int year = dt.getYear();
 				
-				Activity temp = new Activity(chosenActivity, 1, 1, 1, 1);
+				chosenActivity = list.getSelectionModel().getSelectedItem();
+				selectedActivity.setText(chosenActivity);
+				
+				Activity temp = new Activity(chosenActivity, day, month, year, time);
+				try {
+					MainWindow.db.insertActivity(temp);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				final Stage dialog = new MotivationalPopup(time);
+				dialog.initModality(Modality.APPLICATION_MODAL);
+
+				dialog.show();
 				
 			}
 
@@ -83,6 +114,47 @@ public class AddingActivitiesView extends Stage {
 	}
 	
 	private void addButtons() {
+		/*
+		FileOutputStream fos;
+		ObjectOutputStream oos;
+		
+		ArrayList<String> activities = new ArrayList<String>();
+		activities.add("Running");
+		activities.add("Hiking");
+		activities.add("Brushing Teeth");
+		activities.add("Vaccuming");
+		activities.add("Washing Dishes");
+		activities.add("Gym");
+		
+		
+		try {
+			fos = new FileOutputStream("activities");
+			oos = new ObjectOutputStream(fos);
+			
+			oos.writeObject(activities);
+			oos.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		int i = 0;
+		int j = 0;
+		for (String s : activities) {
+			Button temp = new Button(s);
+			grid.add(temp, i, j);
+			
+			i++;
+			if (i == 3) {
+				i = 0;
+				j++;
+			}
+		}
+		
 		
 		Button activity1 = new Button("Running");
 		Button activity2 = new Button("Hiking");
@@ -158,7 +230,29 @@ public class AddingActivitiesView extends Stage {
 			}
 			
 		});
+		*/
 		
+		
+		
+		
+		list.setItems(items);
+		
+		grid.add(list, 0, 0);
+		
+		
+		
+		
+	}
+	
+	public String getDateTime() {
+		java.util.Date dt = new java.util.Date();
+
+		java.text.SimpleDateFormat sdf = 
+		     new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		String output = sdf.format(dt);
+		
+		return output;
 	}
 
 }

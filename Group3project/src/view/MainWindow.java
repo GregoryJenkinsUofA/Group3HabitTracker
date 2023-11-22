@@ -40,7 +40,7 @@ public class MainWindow extends Application {
 	AccountManager accountSystem;
 	
 	LoginCreateAccountPane loginPane;
-	Database db = new Database("db");
+	static Database db = new Database("db");
 	ObservableList<Activity> activitiesList = null;
 
 	@Override
