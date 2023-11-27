@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -55,11 +56,14 @@ public class AddingActivitiesView extends Stage {
 		
 		Text durationText = new Text("Select Length:");
 		
-		Slider slider = new Slider(0, 120, 15);
+		int initialValue = 15;
+		Slider slider = new Slider(0, 60, initialValue);
 		slider.setShowTickLabels(true);
 		slider.setShowTickMarks(true);
 		slider.setMajorTickUnit(15f);
 		slider.setBlockIncrement(15);
+		
+		final int[] tempDuration = {initialValue};
 		
 		// Adding Listener to value property.
         slider.valueProperty().addListener(
@@ -68,7 +72,7 @@ public class AddingActivitiesView extends Stage {
             public void changed(ObservableValue <? extends Number > 
                       observable, Number oldValue, Number newValue)
             {
- 
+            	tempDuration[0] = newValue.intValue();
                 durationText.setText("Select Length: " + newValue.intValue());
             }
         });
@@ -92,15 +96,22 @@ public class AddingActivitiesView extends Stage {
 				Activity temp = new Activity(chosenActivity, day, month, year, time);
 				try {
 					MainWindow.db.insertActivity(temp);
+					MainWindow.activitiesList.add(temp);
+					
+					LinkedList<Activity> test = MainWindow.db.getMonth(11);
+					for (Activity a : test) {
+						System.out.println(a.getDate());
+					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-				final Stage dialog = new MotivationalPopup(time);
+				final Stage dialog = new MotivationalPopup(tempDuration[0] * 60);
 				dialog.initModality(Modality.APPLICATION_MODAL);
 
 				dialog.show();
+				close();
 				
 			}
 

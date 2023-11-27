@@ -6,6 +6,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,10 +22,10 @@ public class MotivationalPopup extends Stage {
     private Label quoteLabel;
     private Label authorLabel;
     private Label timerLabel = new Label();
-    private int timeInSeconds;
+    private int[] timeInSeconds = {300}; // Initial time in seconds
 
-    public MotivationalPopup(int timeInSeconds) {
-        this.timeInSeconds = timeInSeconds;
+    public MotivationalPopup(int initialTimeInSeconds) {
+        this.timeInSeconds[0] = initialTimeInSeconds;
         this.quoteLabel = new Label();
         this.authorLabel = new Label();
 
@@ -43,26 +47,19 @@ public class MotivationalPopup extends Stage {
 
         updateTimerLabel();
 
-        Thread timerThread = new Thread(() -> {
-            while (timeInSeconds > 0) {
-                try {
-                    Thread.sleep(1000);
-                    this.timeInSeconds--;
-                    updateTimerLabel();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+           // timeInSeconds[0] = timeInSeconds[0] - 1; // Update array element
+        	if (timeInSeconds[0] >= 0) {
+        	    timeInSeconds[0] = timeInSeconds[0] - 1; // Update array element
+        	    updateTimerLabel();
+        	} else {
+                // Timer ran out, close the stage
+                close();
             }
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
 
-            // Timer ran out, close the stage
-            Platform.runLater(() -> {
-                Stage stage = (Stage) quoteLabel.getScene().getWindow();
-                stage.close();
-                this.close();
-            });
-        });
-        timerThread.start();
-        
         this.setScene(new Scene(borderPane));
     }
 
@@ -91,9 +88,9 @@ public class MotivationalPopup extends Stage {
 
     private void updateTimerLabel() {
         Platform.runLater(() -> {
-            int hours = timeInSeconds / 3600;
-            int minutes = (timeInSeconds % 3600) / 60;
-            int seconds = timeInSeconds % 60;
+            int hours = Math.max(timeInSeconds[0] / 3600, 0);
+            int minutes = Math.max((timeInSeconds[0] % 3600) / 60, 0);
+            int seconds = Math.max(timeInSeconds[0] % 60, 0);
 
             String formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
             timerLabel.setText("Time remaining: " + formattedTime);

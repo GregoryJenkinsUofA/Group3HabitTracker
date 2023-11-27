@@ -41,7 +41,9 @@ public class MainWindow extends Application {
 	
 	LoginCreateAccountPane loginPane;
 	static Database db = new Database("db");
-	ObservableList<Activity> activitiesList = null;
+	static ObservableList<Activity> activitiesList = null;
+	// Activities table
+	static TableView<Activity> tableView = new TableView<Activity>();
 
 	@Override
 	public void start(Stage Primarystage) {
@@ -52,6 +54,7 @@ public class MainWindow extends Application {
 //		} catch (SQLException e) {
 //			fail("Unable to create database");
 //			e.printStackTrace();
+//			System.out.println("ERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERROR");
 //		}
 		
 		accountSystem = AccountManager.getInstance(false);
@@ -71,17 +74,17 @@ public class MainWindow extends Application {
 		});
 
 		Button analyticsButton = new Button();
-		analyticsButton.setText("Analytics");
+		analyticsButton.setText("Monthly Analytics");
 		analyticsButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				final Stage dialog = new Stage();
+				final Stage dialog = new MonthAnalytics();
 				dialog.initModality(Modality.APPLICATION_MODAL);
 				dialog.initOwner(Primarystage);
 //				VBox dialogVbox = new VBox(20);
 //				dialogVbox.getChildren().add(new Text("Placeholder"));
-				Scene dialogScene = createdialogScene();
-				dialog.setScene(dialogScene);
+				//Scene dialogScene = createdialogScene();
+				//dialog.setScene(dialogScene);
 				dialog.show();
 			}
 		});
@@ -91,18 +94,10 @@ public class MainWindow extends Application {
 		hboxNavigationButtons.setPadding(new Insets(10, 10, 10, 25));
 		hboxNavigationButtons.getChildren().addAll(addActivityButton, analyticsButton);
 
-		// Activities table
-		TableView<Activity> tableView = new TableView<Activity>();
+		
 		tableView.setPlaceholder(new Label("No recent activities added"));
 
-		TableColumn<Activity, String> categoryColumn = new TableColumn<>("Category");
-//		categoryColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
-		categoryColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Activity, String>, ObservableValue<String>>(){
-					public ObservableValue<String> call(CellDataFeatures<Activity, String> param){
-						SimpleStringProperty category = new SimpleStringProperty(param.getValue().getActivity());
-						return category;
-					}
-				});
+
 
 		TableColumn<Activity, String> activityColumn = new TableColumn<>("Activity");
 //		activityColumn.setCellValueFactory(new PropertyValueFactory<>("activityName"));
@@ -114,22 +109,20 @@ public class MainWindow extends Application {
 		});
 
 		TableColumn<Activity, String> dateColumn = new TableColumn<>("Date");
-		dateColumn.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
+		dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
 
 		TableColumn<Activity, Integer> durationColumn = new TableColumn<>("Duration");
 		durationColumn.setCellValueFactory(new PropertyValueFactory<>("duration"));
 
-		TableColumn<Activity, Integer> moodColumn = new TableColumn<>("Mood");
-		moodColumn.setCellValueFactory(new PropertyValueFactory<>("mood"));
 
-		tableView.getColumns().add(categoryColumn);
 		tableView.getColumns().add(activityColumn);
 		tableView.getColumns().add(dateColumn);
 		tableView.getColumns().add(durationColumn);
-		tableView.getColumns().add(moodColumn);
+		
 
 		try {
 			activitiesList = db.getObservableDatabase();
+			tableView.setItems(activitiesList);
 
 			// Add a ListChangeListener that will execute as soon as the contents of the
 			// list is changed.
@@ -174,12 +167,12 @@ public class MainWindow extends Application {
 	// ONLY FOR TESTING NEED TO CHANGE
 	@Override
 	public void stop() {
-		try {
-			db.delete();
-		} catch (SQLException e) {
-			System.out.println("Unable to delete database");
-			e.printStackTrace();
-		}
+//		try {
+//			db.delete();
+//		} catch (SQLException e) {
+//			System.out.println("Unable to delete database");
+//			e.printStackTrace();
+//		}
 	}
 
 	public static void main(String[] args) {
@@ -335,4 +328,7 @@ public class MainWindow extends Application {
 		return dialogScene;
 	}
 
+	public static void updateList() {
+		tableView.setItems(activitiesList);
+	}
 }

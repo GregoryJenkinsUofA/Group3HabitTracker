@@ -1,21 +1,26 @@
 package model;
 
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+
 public class Activity {
 	
-	String activityName;
-	int day;
-	int month;
-	int year;
-	int dayInYear;
-	int duration;
+	private final SimpleStringProperty activityName;
+	private final SimpleIntegerProperty day;
+	private final SimpleIntegerProperty month;
+	private final SimpleIntegerProperty year;
+	private final SimpleIntegerProperty dayInYear;
+	private final SimpleStringProperty date;
+	private final SimpleIntegerProperty duration;
 	
 	public Activity(String activityName, int day, int month, int year, int duration) {
-		this.activityName = activityName;
-		this.day = day;
-		this.month = month;
-		this.year = year;
-		this.dayInYear = calculateDayInYear(day, month);
-		this.duration = duration;
+		this.activityName = new SimpleStringProperty(activityName);
+		this.day = new SimpleIntegerProperty(day);
+		this.month = new SimpleIntegerProperty(month);
+		this.year = new SimpleIntegerProperty(year);
+		this.dayInYear = new SimpleIntegerProperty(calculateDayInYear(day, month));
+		this.date = new SimpleStringProperty(month + "/" + day + "/" + year);
+		this.duration = new SimpleIntegerProperty(duration);
 	}
 	
 	
@@ -71,27 +76,31 @@ public class Activity {
 
 
 	public String getActivity() {
-		return activityName;
+		return activityName.get();
 	}
 	
 	public int getDay() {
-		return day;
+		return day.get();
 	}
 	
 	public int getMonth() {
-		return month;
+		return month.get();
 	}
 	
 	public int getYear() {
-		return year;
+		return year.get();
 	}
 	
 	public int getDayInYear() {
-		return dayInYear;
+		return dayInYear.get();
 	}
 	
 	public int getDuration() {
-		return duration;
+		return duration.get();
+	}
+	
+	public String getDate() {
+		return date.get();
 	}
 	
 

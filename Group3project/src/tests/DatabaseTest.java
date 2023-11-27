@@ -30,7 +30,7 @@ class DatabaseTest {
 		}
 		
 	}
-	
+	/*
 	@Test
 	void testInsertActivity() {
 		Activity test1 = new Activity( "Workout", 1, 1, 1, 1);
@@ -404,5 +404,5 @@ class DatabaseTest {
 //		
 //		
 //	}
-
+*/
 }

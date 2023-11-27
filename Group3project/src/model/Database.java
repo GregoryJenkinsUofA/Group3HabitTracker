@@ -16,9 +16,23 @@ public class Database {
 		this.tableName = tableName;
 		
 		try {
-			//Class.forName("com.mysql.jdbc.Driver");
+			//Class.forName("org.sqlite.JDBC");
+			
+//			File f = new File(tableName + ".db");
+//			if(f.exists() && !f.isDirectory()) { 
+//			    // do something
+//			}
 			
 			conn = DriverManager.getConnection("jdbc:sqlite:" + tableName + ".db");
+			
+			try {
+				//delete();
+			}
+			catch(Exception igorned) {
+				// Nothing because table doesn't exist
+			}
+			
+			createTable();
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -40,20 +54,25 @@ public class Database {
 	}
 	
 	public void createTable() throws SQLException {
-		String createTablesql = "" +
-								"CREATE TABLE  " + tableName +
-								"( " +
-								"Activity TEXT, " +
-								"Day INT, " +
-								"Month INT, " +
-								"Year INT, " +
-								"DayInYear INT, " +
-								"Duration INT, " +
-								"); " +
-								"";
+		// Check if database was already created
+		File f = new File(tableName + ".db");
 		
-		Statement stmt = conn.createStatement();
-		stmt.execute(createTablesql);
+		if(!f.exists()) {
+			String createTablesql = "CREATE TABLE  " + tableName +
+					"( " +
+					"Activity TEXT, " +
+					"Day INT, " +
+					"Month INT, " +
+					"Year INT, " +
+					"DayInYear INT, " +
+					"Duration INT" +
+					"); ";
+
+			Statement stmt = conn.createStatement();
+			stmt.execute(createTablesql);
+		}
+		
+
 										
 	}
 	
@@ -96,8 +115,9 @@ public class Database {
 	 * @throws SQLException
 	 */
 	public LinkedList<Activity> getActivity(String activity) throws SQLException {
-		String selectSQL = "SELECT * from " + tableName + "WHERE Activity=" + activity;
-		Statement stmt = conn.createStatement();
+		String selectSQL = "SELECT * from " + tableName + "WHERE Activity= ?";
+		PreparedStatement stmt = conn.prepareStatement(selectSQL);
+		stmt.setString(1, activity);
 		ResultSet rs = stmt.executeQuery(selectSQL);
 		
 		
@@ -114,7 +134,7 @@ public class Database {
 	 * @throws SQLException
 	 */
 	public LinkedList<Activity> getMonth(int month) throws SQLException {
-		String selectSQL = "SELECT * from " + tableName + "WHERE Month=" + month;
+		String selectSQL = "SELECT * from " + tableName + " WHERE Month= " + month;
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(selectSQL);
 		
@@ -133,8 +153,10 @@ public class Database {
 	 */
 	public LinkedList<Activity> getWeek(int day, int month) throws SQLException {
 		int date = Activity.calculateDayInYear(day, month);
-		String selectSQL = "SELECT * from " + tableName + "WHERE DayInYear BETWEEN" + (date - 7) + " AND " + date;
+		String selectSQL = "SELECT * from " + tableName + " WHERE DayInYear BETWEEN " + (date - 7) + " AND " + date;
 		Statement stmt = conn.createStatement();
+		//stmt.setInt(1, date-7);
+		//stmt.setInt(2, date);
 		ResultSet rs = stmt.executeQuery(selectSQL);
 		
 		
