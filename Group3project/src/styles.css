@@ -1,0 +1,23 @@
+/* Set light blue background for the entire application */
+.root {
+    -fx-background-color: #e6f7ff; /* Light Blue */
+}
+
+/* Style for buttons */
+.button {
+    -fx-background-color: #3498db; /* Blue */
+    -fx-text-fill: #ffffff; /* White text */
+    -fx-font-size: 14px;
+}
+.button-analytics {
+    -fx-background-color: #4CAF50; /* Green background */
+    -fx-border: none; /* Remove button border */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-size: 14px; /* Font size */
+    -fx-padding: 10 20; /* Padding for the button */
+    -fx-cursor: hand; /* Add hand cursor on hover */
+}
+
+.button-analytics:hover {
+    -fx-background-color: #45a049; /* Darker green on hover */
+}

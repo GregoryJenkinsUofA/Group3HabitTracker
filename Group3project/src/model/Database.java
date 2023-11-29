@@ -296,5 +296,24 @@ public class Database {
 		return createObservableList(rs);
 		
 	}
+	
+	/**
+	 * Returns the day as a linked list
+	 * 
+	 * @return linked list of database activities
+	 * @throws SQLException
+	 */
+	public ObservableList<Activity> getObservableDay(int day) throws SQLException {
+		String selectSQL = "SELECT * from " + tableName + " WHERE Day=" + day;
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(selectSQL);
+		
+		//LinkedList<Activity> output = new LinkedList<Activity>();
+		
+		//ObservableList<Activity> output = FXCollections.observableArrayList();
+		
+		return createObservableList(rs);
+		
+	}
 
 }

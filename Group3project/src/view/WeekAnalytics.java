@@ -35,25 +35,26 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Activity;
 
-public class MonthAnalytics extends Stage {
+public class WeekAnalytics extends Stage {
 	GridPane grid = new GridPane();
 	HBox hbox = new HBox();
 	java.util.Date dt = new java.util.Date();
 	int month = dt.getMonth();
+	int day = dt.getDate();
 	
 	LineChart linechart;
 	PieChart pieChart;
 	//Preparing ObservbleList object         
 	ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
 	
-	public MonthAnalytics() {
+	public WeekAnalytics() {
 		
 		
-		LinkedList<Activity> monthActivities = null;
+		LinkedList<Activity> weekActivities = null;
 		
 		try {
 			
-			monthActivities = MainWindow.db.getMonth(month);
+			weekActivities = MainWindow.db.getWeek(day, month);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,7 +62,7 @@ public class MonthAnalytics extends Stage {
 		
 		HashMap<String, LinkedList<Activity>> hm = new HashMap<String, LinkedList<Activity>>();
 		
-		for (Activity a : monthActivities) {
+		for (Activity a : weekActivities) {
 			if (hm.containsKey(a.getActivity())) {
 				LinkedList<Activity> temp = hm.get(a.getActivity());
 				temp.add(a);
@@ -74,7 +75,7 @@ public class MonthAnalytics extends Stage {
 		
 		
 		//Defining X axis  
-		NumberAxis xAxis = new NumberAxis(1, getDaysInMonth(month), 1); 
+		NumberAxis xAxis = new NumberAxis(day-7, day, 1); 
 		xAxis.setLabel("Day"); 
 
 		//Defining y axis 
@@ -92,14 +93,15 @@ public class MonthAnalytics extends Stage {
 			XYChart.Series series = new XYChart.Series(); 
 			series.setName(activityName);
 			
-			int days[] = new int[getDaysInMonth(month)];
+			int days[] = new int[8];
+			int today = Activity.calculateDayInYear(day, month);
 			
 			for (Activity a : list) {
-				days[a.getDay()]++;
+				days[7 + a.getDayInYear() - today]++;
 			}
 
-			for (int i = 0; i < days.length; i++) {
-				series.getData().add(new XYChart.Data(i, days[i]));
+			for (int i = day - 7; i <= day; i++) {
+				series.getData().add(new XYChart.Data(i, days[i + 7 - day]));
 			}
 			
 			pieChartData.add(new PieChart.Data(activityName, list.size()));
@@ -117,7 +119,7 @@ public class MonthAnalytics extends Stage {
 		grid.setVgap(5.0);
 		
 		
-		Text topText = new Text("Past Month");
+		Text topText = new Text("Past Week");
 		
 		
 
@@ -129,7 +131,7 @@ public class MonthAnalytics extends Stage {
 		
 	}
 	
-	public PieChart getMonthPieChart() {
+	public PieChart getWeekPieChart() {
 		//Creating a Pie chart 
 		pieChart = new PieChart(pieChartData);
 		pieChart.setData(pieChartData);
@@ -139,7 +141,7 @@ public class MonthAnalytics extends Stage {
 		return pieChart;
 	}
 	
-	public LineChart getMonthLineChart() {
+	public LineChart getWeekLineChart() {
 		
 
 		

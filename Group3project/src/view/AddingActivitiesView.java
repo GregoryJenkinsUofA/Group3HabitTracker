@@ -22,9 +22,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -34,7 +36,7 @@ public class AddingActivitiesView extends Stage {
 	String chosenActivity = "";
 	Text activityText = new Text("Select Activity:");
 	ListView<String> list = new ListView<String>();
-	ObservableList<String> items =FXCollections.observableArrayList (
+	static ObservableList<String> items =FXCollections.observableArrayList (
 		    "Running", "Hiking", "Brushing Teeth", "Vaccuming", "Washing Dishes", "Gym");
 	Text selectedActivity = new Text();
 	GridPane grid = new GridPane();
@@ -93,7 +95,7 @@ public class AddingActivitiesView extends Stage {
 				chosenActivity = list.getSelectionModel().getSelectedItem();
 				selectedActivity.setText(chosenActivity);
 				
-				Activity temp = new Activity(chosenActivity, day, month, year, time);
+				Activity temp = new Activity(chosenActivity, 15, month, year, time);
 				try {
 					MainWindow.db.insertActivity(temp);
 					MainWindow.activitiesList.add(temp);
@@ -117,134 +119,67 @@ public class AddingActivitiesView extends Stage {
 
 		});
 		
-		vbox.getChildren().addAll(activityText, selectedActivity, grid, durationText, slider, goButton);
+		// Button to start activity
+				Button createNewActivity = new Button("Create new activity");
+				createNewActivity.setOnAction(new EventHandler<ActionEvent>() {
+
+					@Override
+					public void handle(ActionEvent arg0) {
+						final Stage newActivity = new Stage();
+						Group root = new Group();
+						Scene s = new Scene(root, 200, 100, Color.LIGHTBLUE);
+						s.getStylesheets().add("/styles.css"); // Load CSS file
+						VBox vbox = new VBox();
+						vbox.setAlignment(Pos.CENTER);
+						
+						TextField tf = new TextField();
+						
+						
+						Button add = new Button("Add");
+						add.setOnAction(event -> {
+							items.add(tf.getText());
+				        	newActivity.close();
+				        });
+						add.getStyleClass().add("button"); // Apply button styling
+						
+						vbox.getChildren().addAll(tf, add);
+						
+						root.getChildren().addAll(vbox);
+						newActivity.setScene(s);
+						newActivity.initModality(Modality.APPLICATION_MODAL);
+						newActivity.show();
+						
+					}
+					
+				});
+		
+		//HBox hbox = new HBox(activityText, createNewActivity);
+		
+		vbox.getChildren().addAll(activityText, createNewActivity, selectedActivity, grid, durationText, slider, goButton);
 		vbox.setAlignment(Pos.CENTER);
 		
-		this.setScene(new Scene(vbox));
+		Scene activityScene = new Scene(vbox, Color.LIGHTBLUE);
+		activityScene.getStylesheets().add("/styles.css"); // Load CSS file
+		this.setScene(activityScene);
 		
 	}
 	
 	private void addButtons() {
-		/*
-		FileOutputStream fos;
-		ObjectOutputStream oos;
-		
-		ArrayList<String> activities = new ArrayList<String>();
-		activities.add("Running");
-		activities.add("Hiking");
-		activities.add("Brushing Teeth");
-		activities.add("Vaccuming");
-		activities.add("Washing Dishes");
-		activities.add("Gym");
-		
-		
-		try {
-			fos = new FileOutputStream("activities");
-			oos = new ObjectOutputStream(fos);
-			
-			oos.writeObject(activities);
-			oos.close();
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		int i = 0;
-		int j = 0;
-		for (String s : activities) {
-			Button temp = new Button(s);
-			grid.add(temp, i, j);
-			
-			i++;
-			if (i == 3) {
-				i = 0;
-				j++;
-			}
-		}
-		
-		
-		Button activity1 = new Button("Running");
-		Button activity2 = new Button("Hiking");
-		Button activity3 = new Button("Brushing Teeth");
-		Button activity4 = new Button("Vaccuming");
-		Button activity5 = new Button("Washing Dishes");
-		Button activity6 = new Button("Gym");
 
-		grid.add(activity1, 0, 0);
-		grid.add(activity2, 1, 0);
-		grid.add(activity3, 2, 0);
-		grid.add(activity4, 0, 1);
-		grid.add(activity5, 1, 1);
-		grid.add(activity6, 2, 1);
 		
-		activity1.setOnAction(new EventHandler<ActionEvent>() {
+		
+		// Button to start activity
+				Button goButton = new Button("GO!");
+				goButton.setOnAction(new EventHandler<ActionEvent>() {
 
-			@Override
-			public void handle(ActionEvent arg0) {
-				chosenActivity = activity1.getText();
-				selectedActivity.setText(chosenActivity);
-				
-			}
-			
-		});
-		
-		activity2.setOnAction(new EventHandler<ActionEvent>() {
+					// When clicked creates new activity and inserts into database
+					@Override
+					public void handle(ActionEvent arg0) {
 
-			@Override
-			public void handle(ActionEvent arg0) {
-				chosenActivity = activity2.getText();
-				selectedActivity.setText(chosenActivity);				
-			}
-			
-		});
-		
-		activity3.setOnAction(new EventHandler<ActionEvent>() {
+						
+					}
 
-			@Override
-			public void handle(ActionEvent arg0) {
-				chosenActivity = activity3.getText();
-				selectedActivity.setText(chosenActivity);				
-			}
-			
-		});
-		
-		activity4.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent arg0) {
-				chosenActivity = activity4.getText();
-				selectedActivity.setText(chosenActivity);				
-			}
-			
-		});
-		
-		activity5.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent arg0) {
-				chosenActivity = activity5.getText();
-				selectedActivity.setText(chosenActivity);				
-			}
-			
-		});
-		
-		activity6.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent arg0) {
-				chosenActivity = activity6.getText();
-				selectedActivity.setText(chosenActivity);				
-			}
-			
-		});
-		*/
-		
-		
-		
+				});
 		
 		list.setItems(items);
 		

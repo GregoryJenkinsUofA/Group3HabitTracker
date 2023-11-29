@@ -48,14 +48,7 @@ public class MainWindow extends Application {
 	@Override
 	public void start(Stage Primarystage) {
 
-//		try {
-//			db.createTable();
-//
-//		} catch (SQLException e) {
-//			fail("Unable to create database");
-//			e.printStackTrace();
-//			System.out.println("ERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERROR");
-//		}
+
 		
 		accountSystem = AccountManager.getInstance(false);
 
@@ -74,11 +67,11 @@ public class MainWindow extends Application {
 		});
 
 		Button analyticsButton = new Button();
-		analyticsButton.setText("Monthly Analytics");
+		analyticsButton.setText("Analytics");
 		analyticsButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				final Stage dialog = new MonthAnalytics();
+				final Stage dialog = new AnalyticsPopup();
 				dialog.initModality(Modality.APPLICATION_MODAL);
 				dialog.initOwner(Primarystage);
 //				VBox dialogVbox = new VBox(20);
@@ -121,7 +114,10 @@ public class MainWindow extends Application {
 		
 
 		try {
-			activitiesList = db.getObservableDatabase();
+			java.util.Date dt = new java.util.Date();
+			int day = dt.getDate();
+			
+			activitiesList = db.getObservableDay(day);
 			tableView.setItems(activitiesList);
 
 			// Add a ListChangeListener that will execute as soon as the contents of the
@@ -157,7 +153,8 @@ public class MainWindow extends Application {
 //		Primarystage.show();
 		
 		Group root = new Group(vbox);
-		Scene addActivityScene = new Scene(root, 800, 600, Color.WHITE);
+		Scene addActivityScene = new Scene(root, 800, 600, Color.LIGHTBLUE);
+		addActivityScene.getStylesheets().add("/styles.css"); // Load CSS file
 		Primarystage.setScene(addActivityScene);
 		Primarystage.setResizable(false);
 		Primarystage.show();
